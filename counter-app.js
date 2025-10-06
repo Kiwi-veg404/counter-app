@@ -20,7 +20,10 @@ export class CounterApp extends DDDSuper(I18NMixin(LitElement)) {
 
   constructor() {
     super();
-    this.count = 0;
+    // default properties
+    this.count = 16;
+    this.min = 10;
+    this.max = 25;
     this.t = this.t || {};
     this.t = {
       ...this.t,
@@ -40,6 +43,8 @@ export class CounterApp extends DDDSuper(I18NMixin(LitElement)) {
     return {
       ...super.properties,
       count: { type: Number , reflect: true },
+      min: { type: Number },
+      max: { type: Number },
     };
   }
 
@@ -53,7 +58,17 @@ export class CounterApp extends DDDSuper(I18NMixin(LitElement)) {
         background-color: var(--ddd-theme-accent);
         font-family: var(--ddd-font-navigation);
       }
-      :host([count="10"]){
+      //Change color at min 10 and max 25
+      :host([count="10"]) {
+        color: var(--ddd-theme-default-athertonViolet);
+      }
+      :host([count="25"]) {
+        color: var(--ddd-theme-default-athertonViolet);
+      }
+      :host(.at-min) {
+        color: var(--ddd-theme-default-athertonViolet);
+      }
+      :host(.at-max) {
         color: var(--ddd-theme-default-athertonViolet);
       }
       .wrapper {
@@ -63,32 +78,53 @@ export class CounterApp extends DDDSuper(I18NMixin(LitElement)) {
       .counter {
         font-size: var(--counter-app-label-font-size, var(--ddd-font-size-xxl));
       }
+      .buttons {
+        background-color: var(--ddd-theme-primary);
+      }
+      .buttons:focus,
+      .buttons:hover {
+        background-color: var(--ddd-theme-default-athertonViolet);
+      }
     `];
   }
+
+  updated(changedProperties) {
+  if (changedProperties.has('count')) {
+    // at minimum value add class
+    this.classList.toggle('at-min', this.count === this.min);
+    // at maximum value add class  
+    this.classList.toggle('at-max', this.count === this.max);
+  }
+}
 
   // Lit render the HTML
   render() {
     return html`
       <div class="wrapper">
         <div class="counter">${this.count}</div>
-        <div class="buttons">
-          <button @click="${this.decrease}">-1</button>
-          <button @click="${this.increase}">+1</button>
+        <div>
+          <button class="buttons" @click="${this.decrease}">-1</button>
+          <button class="buttons" @click="${this.increase}">+1</button>
         </div>
         <button class="buttons" @click="${this.reset}">Reset</button>
       </div>`;
   }
-
+  
+  // methods to modify count
   increase(){
-    this.count++;
+    if (this.count < this.max){
+      this.count++;
+    }
   }
 
   decrease(){
-    this.count--;
+    if (this.count > this.min){
+      this.count--;
+    }
   }
 
   reset(){
-    this.count = 0;
+    this.count = 16;
   }
 
   /**
