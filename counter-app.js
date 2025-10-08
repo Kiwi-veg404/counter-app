@@ -24,6 +24,7 @@ export class CounterApp extends DDDSuper(I18NMixin(LitElement)) {
     this.count = 16;
     this.min = 10;
     this.max = 25;
+    this.coloredNum = [18, 21];
     this.t = this.t || {};
     this.t = {
       ...this.t,
@@ -45,6 +46,7 @@ export class CounterApp extends DDDSuper(I18NMixin(LitElement)) {
       count: { type: Number , reflect: true },
       min: { type: Number },
       max: { type: Number },
+      coloredNum: { type: Array },
     };
   }
 
@@ -58,11 +60,11 @@ export class CounterApp extends DDDSuper(I18NMixin(LitElement)) {
         background-color: var(--ddd-theme-accent);
         font-family: var(--ddd-font-navigation);
       }
-      //Change color at min 10 and max 25
-      :host([count="10"]) {
+      //Change color classes
+      :host() {
         color: var(--ddd-theme-default-athertonViolet);
       }
-      :host([count="25"]) {
+      :host(.color-change) {
         color: var(--ddd-theme-default-athertonViolet);
       }
       :host(.at-min) {
@@ -94,6 +96,8 @@ export class CounterApp extends DDDSuper(I18NMixin(LitElement)) {
     this.classList.toggle('at-min', this.count === this.min);
     // at maximum value add class  
     this.classList.toggle('at-max', this.count === this.max);
+    // if count is in coloredNum array add class
+    this.classList.toggle('color-change', this.coloredNum.includes(this.count));
   }
 }
 
@@ -103,8 +107,8 @@ export class CounterApp extends DDDSuper(I18NMixin(LitElement)) {
       <div class="wrapper">
         <div class="counter">${this.count}</div>
         <div>
-          <button class="buttons" @click="${this.decrease}">-1</button>
-          <button class="buttons" @click="${this.increase}">+1</button>
+          <button class="buttons" ?disabled="${this.min === this.count}" @click="${this.decrease}">-1</button>
+          <button class="buttons" ?disabled="${this.max === this.count}" @click="${this.increase}">+1</button>
         </div>
         <button class="buttons" @click="${this.reset}">Reset</button>
       </div>`;
